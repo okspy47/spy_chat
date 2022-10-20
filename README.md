@@ -1,4 +1,4 @@
-# Neo Chat
+# Spy's Chat
 
 ###### Made by OkSpy, for </>Neo vRP Hub.
 
