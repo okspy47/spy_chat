@@ -8,7 +8,6 @@ Acest chat deja include urmatoarele comenzi:
 - `say` - Mesaj Consola.
 - `stats` - Statusul jucatorului.
 - `guns` - Give Guns pe permisiuni.
-- `changeid` - Schimba ID-ul unui player(Functioneaza doar cu MySQL-Async).
 - `nc` - NoClip.
 - `respawn` - Respawn la un punct ales.
 - `respawnall` - Respawn tuturor jucatorilor la un punct ales.
