@@ -14,12 +14,12 @@ RegisterServerEvent('chat:removeSuggestion')
 RegisterServerEvent('_chat:muitzaqmessageEntered')
 RegisterServerEvent('chat:clear')
 RegisterServerEvent('__cfx_internal:commandFallback')
-
 RegisterServerEvent('chat:kickSpammer')
 AddEventHandler('chat:kickSpammer', function()
 	TriggerClientEvent('chatMessage', -1, "^1[SPAM] ^2"..vRP.getPlayerName({source}).."^8 a primit kick pentru spam!")
 	DropPlayer(source, 'Ai fost dat afara pentru spam!')
 end)
+
 local disabled = false
 
 RegisterServerEvent("disableChat")
@@ -75,12 +75,12 @@ AddEventHandler('_chat:muitzaqmessageEntered', function(author, color, message)
 					TriggerClientEvent('chatMessage', -1, tag.." " ..author, rgb, " " ..  message)
 				else
 					CancelEvent()
-					TriggerClientEvent('chatMessage', source, "^3[Nume Sv] ^1Chat-ul este momentan dezactivat de catre un admin. Nu poti vorbi!")
+					TriggerClientEvent('chatMessage', source, "^3[GitHub] ^1Chat-ul este momentan dezactivat de catre un admin. Nu poti vorbi!")
 				end
 				print(author.." » ".. message)
 				elseif not WasEventCanceled() and not disabled then
 
-
+-- Zona Grade Chat
 					if vRP.isUserOwner({user_id}) then
 						tag = "[OWNER]"
 						rgb = {255, 0, 0}
@@ -138,6 +138,7 @@ AddEventHandler('_chat:muitzaqmessageEntered', function(author, color, message)
 						tag = "[Civil]"
 						rgb = {255, 255, 255}
 					end
+-- Zona Grade Chat
 					if vRP.hasUserFaction({user_id}) then
 						local faction = vRP.getUserFaction({user_id})
 						TriggerClientEvent('chatMessage', -1, tag.."  ["..faction.."]  "..author, rgb, " " ..  message)
@@ -159,62 +160,36 @@ AddEventHandler('_chat:muitzaqmessageEntered', function(author, color, message)
 	end
 end)
 
+
 RegisterCommand('guns', function(source)
     local user_id = vRP.getUserId({source})
     local player = vRP.getUserSource({user_id})
-    if vRP.isUserCoFondator({user_id}) then --- Ce trebuie sa fie ca sa aiba acces, schimbi via permission/group
+    if vRP.isUserCoFondator({user_id}) then --- Grad de acces la comanda, modifica dupa bunul plac.
       vRPclient.giveWeapons(player,{{
+            --- Arme primite, vezi https://wiki.rage.mp/index.php?title=Weapons pentru coduri.
               ["weapon_appistol"] = {ammo=200},
               ["weapon_assaultrifle"] = {ammo=200},
               ["weapon_gadgetpistol"] = {ammo=100}
           }})
-      vRPclient.notify(player, {"Ti-ai dat arme muistule."})
+      vRPclient.notify(player, {"Ai primit armele dorite."})
     else 
-      vRPclient.notify(player, {"~r~Nu ai acces la aceasta comanda"})
+      vRPclient.notify(player, {"~r~Nu ai acces la aceasta comanda."})
     end     
 end)
-
-
-
 
 
 RegisterCommand("food", function(source)
     local user_id = vRP.getUserId({source})
-    if vRP.isUserOwner({user_id, "Fondator"}) or vRP.isUserCoOwner({user_id, "Co-Fondator"}) or vRP.hasGroup({user_id, "Fondator Comunitate"}) or vRP.hasGroup({user_id, "Scripter"}) or vRP.hasGroup({user_id, "Supervizor"}) or vRP.isUserHeadAdmin({user_id, "Head of Staff"}) or vRP.hasGroup({user_id, "Super Admin"}) or vRP.isUserHeadAdmin({user_id, "Admin"}) then
+    if vRP.isUserCoFondator({user_id}) then --- Grad de acces la comanda, modifica dupa bunul plac.
         vRP.varyHunger({user_id, -100})
         vRP.varyThirst({user_id, -100})
         vRPclient.varyHealth(source, {100})
-        vRPclient.notify(source,{"~b~Esti full acum, pe sistem turbo!"})
+        vRPclient.notify(source,{"Esti full acum!"})
    else
-    vRPclient.notify(source,{"~r~Nu ai acces la aceasta comanda !"})
+    vRPclient.notify(source,{"~r~Nu ai acces la aceasta comanda!"})
         end
   end)
   
-  
-  RegisterCommand("photo", function()
-    N_0xa67c35c56eb1bd9d()
-    if N_0x0d6ca79eeebd8ca3() and N_0x3dec726c25a11bac(-1) then
-        N_0xd801cc02177fa3f1() -- clear photo
-        tvRP.notify("Ai facut o poza!")
-    end
-end)
-  
-RegisterCommand('guns', function(source)
-    local user_id = vRP.getUserId({source})
-    local player = vRP.getUserSource({user_id})
-    if vRP.isUserOwner({user_id, "Fondator"}) then --- Aici in caz ca vrei sa fie pe un anumit grad
-      vRPclient.giveWeapons(player,{{
-              ["weapon_appistol"] = {ammo=200},
-              ["weapon_assaultrifle"] = {ammo=200}
-              
-          }})
-      vRPclient.notify(player, {"Ti-ai dat arme"})
-    else 
-      vRPclient.notify(player, {"~r~Nu ai acces la aceasta comanda"})
-    end     
-end)
-
-
 
 RegisterCommand("job", function(source,args)
     local user_id = vRP.getUserId({source})
@@ -231,177 +206,6 @@ RegisterCommand("job", function(source,args)
         vRPclient.notify(source,{"~r~Jucator invalid!"})
     end
 end)
---------------------------------------------------------------------------Neo Bitches------------------------------------
-RegisterCommand("changeid", function(player, args) -----Chestia asta merge doar daca ai MySQL-Async sau Double DB Driver
-	local user_id = 1
-	if player ~= 0 then
-		user_id = vRP.getUserId({player})
-	end
-	if user_id == 1 or vRP.isUserAdministrator({user_id}) then
-		if #args == 2 then
-			local iddinainte = parseInt(args[1])
-			local idacum = parseInt(args[2])
-			local target_src = vRP.getUserSource({idacum})
-			
-			MySQL.Sync.execute("UPDATE `vrp_user_ids` SET `user_id` = @iddinainte WHERE `user_id` = @idacum", {
-				['@iddinainte'] = iddinainte,
-				['@idacum'] = idacum
-			})
-
-			if target_src then 
-				vRP.kick({target_src, "Noul tau id ar trebuii sa fie "..iddinainte..""})
-			end
-
-			print("^1Done^7")
-		elseif #args == 3 then
-			if args[3] == "save" then
-				local iddinainte = parseInt(args[1])
-				local idacum = parseInt(args[2])
-				local target_src = vRP.getUserSource({idacum})
-
-				MySQL.Sync.execute([[
-					UPDATE `vrp_user_ids` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_user_vehicles` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_user_vehicles` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_user_identities` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_user_identities` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_user_homes` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_user_homes` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_user_data` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_user_data` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_user_business` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_user_business` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_tempbans` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_tempbans` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_penalitati` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_penalitati` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					DELETE FROM `vrp_bbq_grills` WHERE `user_id` = @iddinainte;
-					UPDATE `vrp_bbq_grills` SET `user_id` = @iddinainte WHERE `user_id` = @idacum;
-
-					UPDATE `vrp_business` SET `bizOwnerID` = @iddinainte WHERE `bizOwnerID` = @idacum;
-				]], {
-					['@iddinainte'] = iddinainte,
-					['@idacum'] = idacum
-				})
-
-				local nowData = MySQL.Sync.fetchAll("SELECT * FROM `vrp_users` WHERE `id` = @idacum", {['@idacum'] = idacum})
-				Citizen.Wait(50)
-
-				if nowData then
-					MySQL.Sync.execute([[
-						UPDATE `vrp_users`
-						SET
-						    username = @username,
-						    last_login = @last_login,
-						    whitelisted = @whitelisted,
-						    x = @x,
-						    y = @y,
-						    z = @z,
-						    banned = @banned,
-						    bannedReason = @bannedReason,
-						    bannedBy = @bannedBy,
-						    adminLvl = @adminLvl,
-						    vipLvl = @vipLvl,
-						    lvl = @lvl,
-						    exp = @exp,
-						    need = @need,
-						    pet = @pet,
-						    job = @job,
-						    faction = @faction,
-						    isFactionLeader = @isFactionLeader,
-						    factionRank = @factionRank,
-						    bankMoney = @bankMoney,
-						    walletMoney = @walletMoney,
-						    xzCoins = @xzCoins,
-						    gifts = @gifts,
-						    diamonds = @diamonds,
-						    questFinished = @questFinished,
-						    canDisableAC = @canDisableAC,
-						    warns = @warns,
-						    hoursPlayed = @hoursPlayed,
-						    vehTaxEx = @vehTaxEx,
-						    gotXmasGift = @gotXmasGift,
-						    dblPayday = @dblPayday,
-						    age = @age,
-						    firstName = @firstName,
-						    secondName = @secondName,
-						    vehLim = @vehLim,
-						    bizLim = @bizLim,
-						    refferedBy = @refferedBy,
-						    aJailTime = @aJailTime,
-						    aJailReason = @aJailReason,
-						    DmvTest = @DmvTest
-						WHERE `id` = @iddinainte
-					]], {
-						['@iddinainte'] = iddinainte,
-
-						['@username'] = nowData[1].username,
-					    ['@last_login'] = nowData[1].last_login,
-					    ['@whitelisted'] = nowData[1].whitelisted,
-					    ['@x'] = nowData[1].x,
-					    ['@y'] = nowData[1].y,
-					    ['@z'] = nowData[1].z,
-					    ['@banned'] = nowData[1].banned,
-					    ['@bannedReason'] = nowData[1].bannedReason,
-					    ['@bannedBy'] = nowData[1].bannedBy,
-					    ['@adminLvl'] = nowData[1].adminLvl,
-					    ['@vipLvl'] = nowData[1].vipLvl,
-					    ['@lvl'] = nowData[1].lvl,
-					    ['@exp'] = nowData[1].exp,
-					    ['@need'] = nowData[1].need,
-					    ['@pet'] = nowData[1].pet,
-					    ['@job'] = nowData[1].job,
-					    ['@faction'] = nowData[1].faction,
-					    ['@isFactionLeader'] = nowData[1].isFactionLeader,
-					    ['@factionRank'] = nowData[1].factionRank,
-					    ['@bankMoney'] = nowData[1].bankMoney,
-					    ['@walletMoney'] = nowData[1].walletMoney,
-					    ['@xzCoins'] = nowData[1].xzCoins,
-					    ['@gifts'] = nowData[1].gifts,
-					    ['@diamonds'] = nowData[1].diamonds,
-					    ['@questFinished'] = nowData[1].questFinished,
-					    ['@canDisableAC'] = nowData[1].canDisableAC,
-					    ['@warns'] = nowData[1].warns,
-					    ['@hoursPlayed'] = nowData[1].hoursPlayed,
-					    ['@vehTaxEx'] = nowData[1].vehTaxEx,
-					    ['@gotXmasGift'] = nowData[1].gotXmasGift,
-					    ['@dblPayday'] = nowData[1].dblPayday,
-					    ['@age'] = nowData[1].age,
-					    ['@firstName'] = nowData[1].firstName,
-					    ['@secondName'] = nowData[1].secondName,
-					    ['@vehLim'] = nowData[1].vehLim,
-					    ['@bizLim'] = nowData[1].bizLim,
-					    ['@refferedBy'] = nowData[1].refferedBy,
-					    ['@aJailTime'] = nowData[1].aJailTime,
-					    ['@aJailReason'] = nowData[1].aJailReason,
-					    ['@DmvTest'] = nowData[1].DmvTest
-					})	
-				end
-
-				if target_src then 
-					vRP.kick({target_src, "Noul tau id ar trebuii sa fie "..iddinainte..""})
-				end			
-
-				print("^1Done^7")
-			else
-				print("^1ExtraComanda Invalida^7")
-			end
-		else
-			print("^1/changeid <id-dinainte> <id-deacum>^7")
-		end
-	end
-end)
-
-
-------------------------------------------------------------------------------------------------------------------------------
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
     local name = vRP.getPlayerName({source})
@@ -421,9 +225,9 @@ end)
 
 RegisterCommand('say', function(source, args, rawCommand)
 	if(source == 0)then
-		TriggerClientEvent('chatMessage', -1, "[CONSOLE]", {60, 179, 113}, rawCommand:sub(5))
+		TriggerClientEvent('chatMessage', -1, "[Consola]", {60, 179, 113}, rawCommand:sub(5))
 	else
-		TriggerClientEvent("chatMessage", source, "^1Nume Sv: ^0Sa iti dau la muie nu ai acces la /say")
+		TriggerClientEvent("chatMessage", source, "^1[GitHub]: ^0Nu ai acces la aceasta comanda.")
 	end
 end)
 
@@ -442,7 +246,7 @@ RegisterCommand('stats', function(source, args)
     CancelEvent()
 		TriggerClientEvent('chatMessage', player, "--------------------------------------------------------------------")
         TriggerClientEvent('chatMessage', player, "^0Nume: ^1"..nume.."^0 || ID: ^1"..user_id.."^0")
-        TriggerClientEvent('chatMessage', player, "^0Factiune: ^1"..locdemunca.."^0 || VIP: ^1"..VIP.."^0 || Ore jucate: ^1"..orejucate.."^0 || Nume Sv: ^1"..aur)
+        TriggerClientEvent('chatMessage', player, "^0Factiune: ^1"..locdemunca.."^0 || VIP: ^1"..VIP.."^0 || Ore jucate: ^1"..orejucate.."^0 || Diamante: ^1"..aur)
 		TriggerClientEvent('chatMessage', player, "--------------------------------------------------------------------")
 end)
 
@@ -459,7 +263,6 @@ RegisterCommand("nc", function(player)
     local user_id = vRP.getUserId({player})
 	if vRP.isUserHelper({user_id}) then
         vRPclient.toggleNoclip(player, {})
-		--vRPclient.notify(player,{"~y~Nume Sv: ~w~Noclip"})
 		local embed = {
 		{
 			["color"] = "15158332",
@@ -474,7 +277,7 @@ RegisterCommand("nc", function(player)
 	
 	PerformHttpRequest('https://discord.com/api/webhooks/855090528248660028/cCPJa4rsneb2duiFxlZRkNDijlf4cC3M5y_dHE77g-XM9Fkpw_hL-KdM2470hCMIENaL', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
     else
-        TriggerClientEvent("chatMessage", source, "^1Failed: ^0Nu ai acces la aceasta comanda")
+        TriggerClientEvent("chatMessage", source, "^1[Eroare]: ^0Nu ai acces la aceasta comanda")
     end
 end)
 
@@ -491,7 +294,7 @@ RegisterCommand("respawn", function(player, args)
 			local users = vRP.getUsers({})
 			for uID, ply in pairs(users) do
 				if vRP.isUserHelper({uID}) then
-					TriggerClientEvent('chatMessage', ply,"^3Nume SvRP: ^0Admin-ul ^3"..vRP.getPlayerName({player}).."^0 i-a dat respawn lui ^0[^3"..target_id.."^0]")
+					TriggerClientEvent('chatMessage', ply,"^1[GitHub]: ^0Admin-ul ^3"..vRP.getPlayerName({player}).."^0 i-a dat respawn lui ^0[^3"..target_id.."^0]")
 					local embed = {
 					{
 						["color"] = "15158332",
@@ -522,7 +325,7 @@ RegisterCommand("respawnall", function(player)
                 vRPclient.teleport(v, {-146.67811584473,6297.4604492188,31.48952293396}) -- locatia de respawn
             end
         end
-        TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Tot server-ul a primit respawn de la ^3"..GetPlayerName(player))
+        TriggerClientEvent("chatMessage", -1, "^1[GitHub]: ^0Tot server-ul a primit respawn de la ^3"..GetPlayerName(player))
 		local embed = {
 		{
 			["color"] = "15158332",
@@ -546,7 +349,7 @@ RegisterCommand("gotoevent", function(player)
         vRPclient.teleport(player, {evCoords[1], evCoords[2], evCoords[3]})
         TriggerClientEvent("zedutz:setFreeze", player, true)
     else
-        TriggerClientEvent("chatMessage", player, "^1Failed: ^0Nu exista nici un eveniment activ")
+        TriggerClientEvent("chatMessage", player, "^1[Eroare]: ^0Nu exista nici un eveniment activ")
     end
 end, false)
 
@@ -564,7 +367,7 @@ RegisterCommand("stopevent", function(player)
             evCoords = {}
             eventOn = false
 
-            TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Event-ul a fost oprit")
+            TriggerClientEvent("chatMessage", -1, "^1[GitHub]: ^0Event-ul a fost oprit")
 			local embed = {
 			{
 				["color"] = "15158332",
@@ -579,26 +382,13 @@ RegisterCommand("stopevent", function(player)
 		
 		PerformHttpRequest('https://discord.com/api/webhooks/845047930456244244/JeS7bs5Uy0AAJo0DK_UhGRNlNA9Uvt0KxQuo_2MAXwN1psCJ1VApzKkuZnXowHHZHmdq', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
         else
-            TriggerClientEvent("chatMessage", player, "^1Failed: ^0Nu exista nici un eveniment activ !")
+            TriggerClientEvent("chatMessage", player, "^1[Eroare]: ^0Nu exista nici un eveniment activ !")
         end
     else
-        TriggerClientEvent("chatMessage", player, "^1Failed: ^0Nu ai acces la aceasta comanda")
+        TriggerClientEvent("chatMessage", player, "^1[Eroare]: ^0Nu ai acces la aceasta comanda")
     end
 end, false)
 
---[[Citizen.CreateThread(function()
-	while true do
-		for _, playerId in ipairs(GetPlayers()) do
-			Wait(500)
-			local u_id = vRP.getUserId({playerId})
-			if u_id == nil then
-			  print('[vAC] '..GetPlayerName(playerId)..' a fost scos!(Detectat fara id)')
-			  DropPlayer(playerId,'[vAC] Conexiunea cu serverul a fost pierduta! \n Data viitoare, sa intrii cu id <3')
-			end
-		end
-		Citizen.Wait(30000)
-	end
-end)]]
 
 local function sendMsgToStaff(msg, user_id, staffOnline)
     local task = Task(staffOnline)
@@ -607,7 +397,7 @@ local function sendMsgToStaff(msg, user_id, staffOnline)
     local users = vRP.getUsers({})
     for uID, ply in pairs(users) do
         if vRP.isUserHelper({user_id}) then
-            TriggerClientEvent("chatMessage", ply, "^3Nume Sv: ^0Question ["..user_id.."]: "..msg)
+            TriggerClientEvent("chatMessage", ply, "^1[GitHub]: ^0Question ["..user_id.."]: "..msg)
             vRPclient.playSound(ply, {"HUD_MINI_GAME_SOUNDSET","5_SEC_WARNING"})
             staffs = staffs + 1
         end
@@ -616,7 +406,7 @@ local function sendMsgToStaff(msg, user_id, staffOnline)
     task({staffs})
 end
 
-local function getNrCifre(n) -- stiu asta din C++ dreq =]] don't judge me 
+local function getNrCifre(n)
     local cifs = 0
     while n ~= 0 do
         cifs = cifs + 1
@@ -652,14 +442,14 @@ RegisterCommand("n", function(player, args, msg)
                         questions[user_id] = 60
                         autoDecremet(user_id)
                     else
-                        TriggerClientEvent("chatMessage", player, "^1Eroare^0: Nici un membru din staff nu este online")
+                        TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nici un membru din staff nu este online")
                     end
                 end)
             else
-                TriggerClientEvent("chatMessage", player, "^7> ^3Nume Sv^0: /n <intrebare>")
+                TriggerClientEvent("chatMessage", player, "^7> ^1[GitHub]^0: /n <intrebare>")
             end
         else
-            TriggerClientEvent("chatMessage", player, "^1Eroare^0: Ai pus deja o intrebare, asteapta ^5"..questions[user_id].." ^0secunde")
+            TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Ai pus deja o intrebare, asteapta ^5"..questions[user_id].." ^0secunde")
         end
     end
 end)
@@ -773,14 +563,14 @@ RegisterCommand("info",function(thePlayer,args)
 					  vRPclient.removeDiv(thePlayer, {"rpg_stats"})
 					end})
 				else
-					TriggerClientEvent('chatMessage',thePlayer,"^1Eroare: ^0Acest jucator nu a fost gasit in baza de date!")
+					TriggerClientEvent('chatMessage',thePlayer,"^1[Eroare]: ^0Acest jucator nu a fost gasit in baza de date!")
 				end
 			end)
 		else
-			TriggerClientEvent('chatMessage',thePlayer,"^1Syntax: ^0/info <id>")
+			TriggerClientEvent('chatMessage',thePlayer,"^1[Sintaxa]: ^0/info <id>")
 		end
 	else
-		TriggerClientEvent('chatMessage',thePlayer,"^1Eroare: ^0Nu ai acces la aceasta comanda!")
+		TriggerClientEvent('chatMessage',thePlayer,"^1[Eroare]: ^0Nu ai acces la aceasta comanda!")
 	end
 end)
 
@@ -795,8 +585,8 @@ RegisterCommand("nr", function(player, args, msg)
                 local target_source = vRP.getUserSource({target_id})
                 if target_source then
                     if questions[target_id] then
-                        TriggerClientEvent("chatMessage", target_source, "^3Nume SvRP: ^0".. GetPlayerName(player) .. " ti-a raspuns la intrebare:")
-                        TriggerClientEvent("chatMessage", target_source, "^3Nume SvRP: ^0Raspuns: "..response)
+                        TriggerClientEvent("chatMessage", target_source, "^3[GitHub]: ^0".. GetPlayerName(player) .. " ti-a raspuns la intrebare:")
+                        TriggerClientEvent("chatMessage", target_source, "^3[GitHub]: ^0Raspuns: "..response)
 
                         local users = vRP.getUsers({})
                         for uID, ply in pairs(users) do
@@ -807,16 +597,16 @@ RegisterCommand("nr", function(player, args, msg)
 
                         questions[target_id] = -29
                     else
-                        TriggerClientEvent("chatMessage", player, "^1Eroare^0: Acel jucator nu are o intrebare")
+                        TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Acel jucator nu are o intrebare")
                     end
                 else
-                    TriggerClientEvent("chatMessage", player, "^1Eroare^0: Acel jucator nu mai este conectat")
+                    TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Acel jucator nu mai este conectat")
                 end
             else
-                TriggerClientEvent("chatMessage", player, "^7>> ^3Nume Sv^0: /nr <User ID> <raspuns>")
+                TriggerClientEvent("chatMessage", player, "^7>> ^1[Sintaxa]^0: /nr <User ID> <raspuns>")
             end
         else
-            TriggerClientEvent("chatMessage", player, "^1Eroare^0: Nu ai acces la aceasta comanda")
+            TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nu ai acces la aceasta comanda")
         end
     end
 end)
@@ -833,7 +623,7 @@ RegisterCommand("arevivearea", function(source,args)
 					vRPclient.notify(k,{"Ai primit revive de la adminul ~y~" .. name})
 				end
 			end)
-			TriggerClientEvent("chatMessage",-1,"^3Nume SvRP: ^0Adminul ^3" .. name ..  " ^0a dat revive pe o raza de " .. radius .. "m")
+			TriggerClientEvent("chatMessage",-1,"^3[GitHub]: ^0Adminul ^3" .. name ..  " ^0a dat revive pe o raza de " .. radius .. "m")
 			local embed = {
 			{
 				["color"] = "15158332",
@@ -849,7 +639,7 @@ RegisterCommand("arevivearea", function(source,args)
 		PerformHttpRequest('https://discord.com/api/webhooks/854463627776229407/lpgYAOT_tp5T-4ecCmJpA-CskBruyRSZ1qEPHRAEBcq9iEr5Gi3bdABS-OmUHQtAIx-G', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
 
 		else
-		vRPclient.notify(src,{"~r~Failed: ~w~Nu ai acces la aceasta comanda!"})
+		vRPclient.notify(src,{"~r~Eroare: ~w~Nu ai acces la aceasta comanda!"})
 	end
 end)
 
@@ -864,18 +654,18 @@ RegisterCommand('arevive', function(source, args, msg)
 	  if target ~= nil then
 		if vRP.isUserHelper({user_id}) then 
 		  vRPclient.varyHealth(target,{100})
-		  TriggerClientEvent('chatMessage', -1, "^4Server^7: Adminul ^4"..GetPlayerName(source).." ^7I-a dat revive lui "..GetPlayerName(target).."!")
+		  TriggerClientEvent('chatMessage', -1, "^4[GitHub]^7: Adminul ^4"..GetPlayerName(source).." ^7I-a dat revive lui "..GetPlayerName(target).."!")
 		else
-		  TriggerClientEvent('chatMessage', source, "^8Eroare^7: Nu deti acces-ul necesar pentru a folosi aceasta comanda.")
+		  TriggerClientEvent('chatMessage', source, "^1[Eroare]^7: Nu deti acces-ul necesar pentru a folosi aceasta comanda.")
 		end
 	  else
-		TriggerClientEvent('chatMessage', source, "^8Eroare^7: Player-ul nu este conectat.")
+		TriggerClientEvent('chatMessage', source, "^1[Eroare]^7: Player-ul nu este conectat.")
 	  end
 	else
-	  TriggerClientEvent('chatMessage', source, "^8Shyde^7: /arevive <user-id>")
+	  TriggerClientEvent('chatMessage', source, "^1[Eroare]^7: /arevive <user-id>")
 	end
   end)
-
+------An ramas aici
 RegisterCommand("startevent", function(player)
     local user_id = vRP.getUserId({player})
     if vRP.isUserOwner({user_id}) then
@@ -884,8 +674,8 @@ RegisterCommand("startevent", function(player)
                 evCoords = {x, y, z + 0.5}
             end)
             eventOn = true
-            TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Adminul ^3"..vRP.getPlayerName({player}).." ^0a pornit un eveniment!")
-			TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Foloseste ^3/gotoevent ^0pentru a da tp acolo")
+            TriggerClientEvent("chatMessage", -1, "^3[GitHub]: ^0Adminul ^3"..vRP.getPlayerName({player}).." ^0a pornit un eveniment!")
+			TriggerClientEvent("chatMessage", -1, "^3[GitHub]: ^0Foloseste ^3/gotoevent ^0pentru a da tp acolo")
 			local embed = {
 			{
 				["color"] = "15158332",
@@ -901,7 +691,7 @@ RegisterCommand("startevent", function(player)
 		PerformHttpRequest('https://discord.com/api/webhooks/855093514576592946/GAObCVgHAvuZdwb13kmwo9CgCTBrQrdlCRw1LKHIfKS4BqLQb7AnlJaFWqKlYs2KksSp', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
         end
     else
-        TriggerClientEvent("chatMessage", player, "^1Failed: ^0Nu ai acces la aceasta comanda")
+        TriggerClientEvent("chatMessage", player, "^1[Eroare]: ^0Nu ai acces la aceasta comanda")
     end
 end, false)
 
@@ -910,7 +700,7 @@ RegisterCommand('clear', function(source)
     if user_id ~= nil then
         if vRP.isUserHelper({user_id}) then
             TriggerClientEvent("chat:clear", -1);
-            TriggerClientEvent("chatMessage", -1, "^3Nume SvRP: ^0Adminul ^3".. vRP.getPlayerName({source}) .."^0 a sters tot chat-ul.");
+            TriggerClientEvent("chatMessage", -1, "^3[GitHub]: ^0Adminul ^3".. vRP.getPlayerName({source}) .."^0 a sters tot chat-ul.");
 			local embed = {
 			{
 				["color"] = "15158332",
@@ -925,7 +715,7 @@ RegisterCommand('clear', function(source)
 		
 		PerformHttpRequest('https://discord.com/api/webhooks/855094192493035540/nMU1KAxo4ZuvnyS_Zz_kES1X3QjmEJZajTgkn47gnQkYNU0l53krNpcLJvVtpen3CtAp', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
         else
-            TriggerClientEvent("chatMessage", source, "^1Failed^0: Nu ai acces la aceasta comanda.");
+            TriggerClientEvent("chatMessage", source, "^1[Eroare]^0: Nu ai acces la aceasta comanda.");
         end
     end
 end)
@@ -944,7 +734,7 @@ RegisterCommand("giveallmoney", function(player, args)
         local theMoney = parseInt(args[1]) or 0
         if theMoney >= 1 then
             giveAllBankMoney(theMoney, false)
-            TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Server-ul a oferit tuturor cetatenilor ^3"..vRP.formatMoney({theMoney}).." ^0(de) €.")
+            TriggerClientEvent("chatMessage", -1, "^3[Eroare]: ^0Server-ul a oferit tuturor cetatenilor ^3"..vRP.formatMoney({theMoney}).." ^0(de) €.")
         else
             print("/giveallmoney <suma>")
         end
@@ -954,12 +744,12 @@ RegisterCommand("giveallmoney", function(player, args)
             local theMoney = parseInt(args[1]) or 0
             if theMoney >= 1 then
                 giveAllBankMoney(theMoney, false)
-				TriggerClientEvent("chatMessage", -1, "^3Nume Sv: ^0Fondator-ul ^3"..vRP.getPlayerName({player}).."^0 a oferit tuturor jucatorilor ^3"..vRP.formatMoney({theMoney}).." ^0(de) €.")
+				TriggerClientEvent("chatMessage", -1, "^3[GitHub]: ^0Fondator-ul ^3"..vRP.getPlayerName({player}).."^0 a oferit tuturor jucatorilor ^3"..vRP.formatMoney({theMoney}).." ^0(de) €.")
             else
-                TriggerClientEvent("chatMessage", player, "^1Failed^0: /giveallmoney <suma>")
+                TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: /giveallmoney <suma>")
             end
         else
-            TriggerClientEvent("chatMessage", player, "^1Failed^0: Nu ai acces la aceasta comanda")
+            TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nu ai acces la aceasta comanda")
         end
     end
 end, false)
@@ -979,7 +769,7 @@ RegisterCommand('a', function(source, args, rawCommand)
 	local user_id = vRP.getUserId({source})
 	if user_id ~= nil then
 		if(args[1] == nil)then
-			TriggerClientEvent('chatMessage', source, "^1Eroare: ^0/"..rawCommand.." mesaj") 
+			TriggerClientEvent('chatMessage', source, "^1[Eroare]: ^0/"..rawCommand.." mesaj") 
 		else
 			if(vRP.isUserHelper({user_id}))then
 				local users = vRP.getUsers({})
@@ -997,7 +787,7 @@ RegisterCommand('h', function(source, args, rawCommand)
 	local user_id = vRP.getUserId({source})
 	if user_id ~= nil then
 		if(args[1] == nil)then
-			TriggerClientEvent('chatMessage', source, "^1Eroare: ^0/"..rawCommand.." mesaj") 
+			TriggerClientEvent('chatMessage', source, "^1[Eroare]: ^0/"..rawCommand.." mesaj") 
 		else
 			if(vRP.isAdministrator({user_id}))then
 				local users = vRP.getUsers({})
@@ -1015,7 +805,7 @@ RegisterCommand('f', function(source, args, rawCommand)
 	local user_id = vRP.getUserId({source})
 	if user_id ~= nil then
 		if(args[1] == nil)then
-			TriggerClientEvent('chatMessage', source, "^1Eroare: ^0/"..rawCommand.." mesaj") 
+			TriggerClientEvent('chatMessage', source, "^1[Eroare]: ^0/"..rawCommand.." mesaj") 
 		else
 			if(vRP.isUserFondator({user_id}))then
 				local users = vRP.getUsers({})
@@ -1037,7 +827,7 @@ RegisterCommand("aa2", function(player, args)
 end, false)
 
 RegisterCommand("serverdiscord",function( source )
-		TriggerClientEvent('chatMessage', source, "Discord-ul serverului este ^3discord.gg/Nume sv") 
+		TriggerClientEvent('chatMessage', source, "Discord-ul serverului este ^3discord.gg/github") 
 end)
 
 RegisterCommand("tptome", function(player, args)
@@ -1066,13 +856,13 @@ RegisterCommand("tptome", function(player, args)
 					  PerformHttpRequest('https://discord.com/api/webhooks/854463165671407627/F9oQKf6AzIvi_x2Bgc_D8Wmo3edeERpM7oGOxiVVXtw8jJ4k4FL7kbPxU0j16sg14rHc', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
 				end)
 			else
-				TriggerClientEvent("chatMessage", player, "^1Failed^0: Jucatorul nu este conectat !")
+				TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Jucatorul nu este conectat !")
 			end
 		else
-			TriggerClientEvent("chatMessage", player, "^1Failed^0: /tptome <user_id>")
+			TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: /tptome <user_id>")
 		end
 	else
-		TriggerClientEvent("chatMessage", player, "^1Failed^0: Nu ai acces la aceasta comanda !")
+		TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nu ai acces la aceasta comanda !")
 	end
 end, false)
 
@@ -1102,13 +892,13 @@ RegisterCommand("tpto", function(player, args)
 					  PerformHttpRequest('https://discord.com/api/webhooks/854461459722666014/nk1oiROMRQB9meB4aI87FDn1WppaproQUXLocP8p8N9ZpiHCvOeWk2829-mtRHAdSeNf', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
 				end)
 			else
-				TriggerClientEvent("chatMessage", player, "^1Failed^0: Jucatorul nu este conectat !")
+				TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Jucatorul nu este conectat !")
 			end
 		else
-			TriggerClientEvent("chatMessage", player, "^1Failed^0: /tpto <user_id>")
+			TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: /tpto <user_id>")
 		end
 	else
-		TriggerClientEvent("chatMessage", player, "^1Failed^0: Nu ai acces la aceasta comanda !")
+		TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nu ai acces la aceasta comanda !")
 	end
 end, false)
 
@@ -1130,7 +920,7 @@ RegisterCommand("tptow", function(player)
 		  }
 		  PerformHttpRequest('https://discord.com/api/webhooks/854463329610367006/zv_R02xyXReCn7SDitAQvshr1OiaoITXmiPoh5r3RfyKLfTGh6EhHqxglX7P2QZrs23u', function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' }) 
 	else
-		TriggerClientEvent("chatMessage", player, "^1Failed^0: Nu ai acces la aceasta comanda !")
+		TriggerClientEvent("chatMessage", player, "^1[Eroare]^0: Nu ai acces la aceasta comanda !")
 	end
 end, false)
 
